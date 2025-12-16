@@ -103,3 +103,96 @@ export const influencerService = {
     }
   }
 }
+
+// Commission Report Types
+export interface CommissionReportItem {
+  invoice: string
+  purchaser: string
+  purchaser_id: number | null
+  distributor: string | null
+  distributor_id: number | null
+  referred_distributors: number
+  order_date: string
+  percentage: string
+  order_total: string
+  commission: string
+}
+
+export interface OrderItem {
+  sku: string
+  product_name: string
+  price: string
+  quantity: number
+  total: string
+}
+
+export interface Pagination {
+  current_page: number
+  per_page: number
+  total: number
+  last_page: number
+  from: number | null
+  to: number | null
+}
+
+export interface CommissionReportFilters {
+  distributor?: string
+  date_from?: string
+  date_to?: string
+  invoice?: string
+  per_page?: number
+  page?: number
+}
+
+export interface CommissionReportResponse {
+  success: boolean
+  message: string
+  data: CommissionReportItem[]
+  pagination: Pagination
+}
+
+export interface OrderItemsResponse {
+  success: boolean
+  message: string
+  data: {
+    invoice: string
+    items: OrderItem[]
+  }
+}
+
+// Commission Report Service
+export const commissionReportService = {
+  // Get commission report with filters
+  async getReport(filters: CommissionReportFilters = {}): Promise<CommissionReportResponse> {
+    try {
+      const queryParams = new URLSearchParams()
+
+      if (filters.distributor) queryParams.append('distributor', filters.distributor)
+      if (filters.date_from) queryParams.append('date_from', filters.date_from)
+      if (filters.date_to) queryParams.append('date_to', filters.date_to)
+      if (filters.invoice) queryParams.append('invoice', filters.invoice)
+      if (filters.per_page) queryParams.append('per_page', filters.per_page.toString())
+      if (filters.page) queryParams.append('page', filters.page.toString())
+
+      const queryString = queryParams.toString()
+      const endpoint = `/v1/reports/commission${queryString ? `?${queryString}` : ''}`
+
+      const response = await apiService.get(endpoint)
+      return response
+    } catch (error) {
+      console.error('Fetch commission report error:', error)
+      throw error
+    }
+  },
+
+  // Get order items for a specific invoice
+  async getOrderItems(invoice: string): Promise<OrderItemsResponse> {
+    try {
+      const response = await apiService.get(`/v1/reports/commission/orders/${invoice}/items`)
+      return response
+    } catch (error) {
+      console.error('Fetch order items error:', error)
+      throw error
+    }
+  }
+}

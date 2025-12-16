@@ -1,6 +1,6 @@
 # TSA Backend Assessment - Commission & Top Distributors Reporting System
 
-> Multi-level Marketing Commission and Top Distributors Reporting API built with Laravel 12, MariaDB, and Docker
+> Multi-level Marketing Commission and Top Distributors Reporting API built with Laravel 12, MariaDB, and Docker (Laravel Sail)
 
 [![Tests](https://img.shields.io/badge/tests-46%20passed-success)]()
 [![Laravel](https://img.shields.io/badge/Laravel-12-red)]()
@@ -11,73 +11,75 @@
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
+- [Assessment Overview](#assessment-overview)
+- [Business Rules](#business-rules)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [Installation](#installation)
 - [API Endpoints](#api-endpoints)
 - [Testing](#testing)
+- [Expected Test Cases](#expected-test-cases)
 - [Project Structure](#project-structure)
 
 ---
 
-## 🎯 Overview
+## 🎯 Assessment Overview
 
-This project implements a comprehensive reporting system for a multi-level marketing company that tracks:
-1. **Commission Reports** - Calculate distributor commissions based on referred customers and distributors
-2. **Top Distributors** - Rank distributors by total sales from their referral network
+### User Story
 
-### Business Logic
+Company ABC is a multi-level marketing company that manufactures and sells handbags through its distributors.
 
-**Commission Tiers:**
-- 0-4 referred distributors: **5%**
-- 5-10 referred distributors: **10%**
-- 11-20 referred distributors: **15%**
-- 21-29 referred distributors: **20%**
-- 30+ referred distributors: **30%**
+**Types of Users:**
+- **Customers** - Users who joined the company to purchase handbags
+- **Distributors** - Users eligible to receive commissions from purchases made by customers they have referred (Note: A Distributor may or may not purchase handbags)
 
-**Rules:**
-- Only **Customers** generate commissions (not Distributors purchasing for themselves)
-- Only **Distributors** who referred the customer earn commissions
-- Commission percentage is based on the number of distributors referred **at the time of order**
+### Tasks Implemented
+
+| Task | Description | Status |
+|------|-------------|--------|
+| **Task 1** | Commission Report - Pull orders with commission calculations | ✅ Complete |
+| **Task 2** | Top Distributors Report - Top 200 distributors by total sales | ✅ Complete |
 
 ---
 
-## ✨ Features
+## 📊 Business Rules
 
-### Task 1: Commission Report
-- ✅ Filter by Distributor (ID, First Name, or Last Name)
-- ✅ Filter by Order Date Range
-- ✅ Filter by Invoice Number
-- ✅ Pagination support
-- ✅ Accurate commission calculation based on referred distributors count
-- ✅ Order items detail endpoint
+### Commission Tiers
 
-### Task 2: Top Distributors Report
-- ✅ Top 200 distributors by total sales (configurable)
-- ✅ Correct ranking (tied sales = same rank)
-- ✅ Total sales aggregation from entire referral network
-- ✅ Pagination support
+| Referred Distributors | Commission Percentage |
+|-----------------------|----------------------|
+| 0-4 distributors | **5%** |
+| 5-10 distributors | **10%** |
+| 11-20 distributors | **15%** |
+| 21-29 distributors | **20%** |
+| 30+ distributors | **30%** |
 
-### Additional Features
-- ✅ Service-Repository Design Pattern
-- ✅ Comprehensive test coverage (46 tests, 142 assertions)
-- ✅ Request validation
-- ✅ Optimized database queries with indexes
-- ✅ RESTful API design
-- ✅ Docker containerization
+### Commission Eligibility Rules
+
+1. **Purchaser must be a Customer** (not a Distributor)
+2. **Referrer must be a Distributor** (not a Customer)
+3. Commission % is based on the number of distributors referred **at the time of order**
+
+### Example
+
+> John (distributor) referred Mary to join the company as a Customer. When Mary made a purchase on 4/11/2020, John had already referred a total of 8 distributors. So the commission he would get from Mary's purchase is **10%** of the amount Mary paid.
+
+### Total Sales Calculation (Top Distributors)
+
+Total Sales = Sum of all orders purchased by customers **AND** distributors referred by the distributor.
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Framework:** Laravel 12
-- **Language:** PHP 8.4+
-- **Database:** MariaDB 10
-- **Container:** Docker (Laravel Sail)
-- **Testing:** Pest PHP
-- **Architecture:** Service-Repository Pattern
+| Component | Technology |
+|-----------|------------|
+| **Framework** | Laravel 12 |
+| **Language** | PHP 8.4+ |
+| **Database** | MariaDB 10 |
+| **Container** | Docker (Laravel Sail) |
+| **Testing** | Pest PHP |
+| **Architecture** | Service-Repository Pattern |
 
 ---
 
@@ -92,53 +94,80 @@ Controller → Service → Repository → Database
 ```
 
 **Layers:**
-- **Controllers:** Handle HTTP requests/responses
-- **Services:** Business logic and data transformation
-- **Repositories:** Database queries and data access
-- **DTOs:** Data transfer objects for consistent data structure
-- **Enums:** Type-safe constants (CommissionTier, UserType)
+
+| Layer | Responsibility | Files |
+|-------|---------------|-------|
+| **Controllers** | Handle HTTP requests/responses | `CommissionReportController`, `TopDistributorsController` |
+| **Services** | Business logic & data transformation | `CommissionReportService`, `TopDistributorsService` |
+| **Repositories** | Database queries & data access | `EloquentOrderRepository`, `EloquentDistributorRepository` |
+| **DTOs** | Data transfer objects | `CommissionReportDTO`, `OrderItemDTO`, `TopDistributorDTO` |
+| **Enums** | Type-safe constants | `CommissionTier`, `UserType` |
 
 ---
 
 ## 📦 Installation
 
 ### Prerequisites
-- Docker Desktop installed
+
+- Docker Desktop installed and running
 - Git
 
 ### Setup Steps
 
-1. **Clone the repository**
-   ```bash
-   cd C:\dev\personal\vue-laravel-project\api-laravel
-   ```
+#### 1. Navigate to Project Directory
+```bash
+cd C:\dev\personal\vue-laravel-project\api-laravel
+```
 
-2. **Start Docker containers**
-   ```bash
-   docker-compose up -d
-   ```
+#### 2. Copy Environment File
+```bash
+cp .env.example .env
+```
 
-3. **Install dependencies** (if needed)
-   ```bash
-   docker-compose exec laravel.test composer install
-   ```
+#### 3. Start Docker Containers (Laravel Sail)
+```bash
+docker-compose up -d
+```
 
-4. **Set up environment**
-   ```bash
-   cp .env.example .env
-   docker-compose exec laravel.test php artisan key:generate
-   ```
+This starts:
+- `laravel.test` - PHP 8.4 with Laravel
+- `mariadb` - MariaDB database server
 
-5. **Import database**
-   ```bash
-   # Place your nxm_assessment_2023.sql file in database/sql/ as 00_data.sql
-   docker-compose exec mariadb bash -c "mysql -uroot -ppassword nxm_assessment_2023 < /docker-entrypoint-initdb.d/00_data.sql"
-   ```
+#### 4. Install Dependencies
+```bash
+docker-compose exec laravel.test composer install
+```
 
-6. **Verify setup**
-   ```bash
-   docker-compose exec laravel.test php artisan test
-   ```
+#### 5. Generate Application Key
+```bash
+docker-compose exec laravel.test php artisan key:generate
+```
+
+#### 6. Import Database Schema
+
+The database schema file `nxm_assessment_2023.sql` should be placed in `database/sql/` directory.
+
+```bash
+# Access MariaDB container
+docker-compose exec mariadb mysql -uroot -ppassword
+
+# Create database (if not exists)
+CREATE DATABASE IF NOT EXISTS nxm_assessment_2023;
+USE nxm_assessment_2023;
+
+# Import the schema (from host)
+docker-compose exec mariadb mysql -uroot -ppassword nxm_assessment_2023 < /path/to/nxm_assessment_2023.sql
+```
+
+#### 7. Verify Installation
+```bash
+# Run tests
+docker-compose exec laravel.test php artisan test
+
+# Check API endpoints
+curl http://localhost/api/v1/reports/commission
+curl http://localhost/api/v1/reports/top-distributors
+```
 
 ---
 
@@ -149,23 +178,24 @@ Controller → Service → Repository → Database
 http://localhost/api/v1/reports
 ```
 
-### 1. Commission Report
+### Task 1: Commission Report
 
-**Get Commission Report**
+#### Get Commission Report
 ```http
 GET /api/v1/reports/commission
 ```
 
 **Query Parameters:**
-| Parameter   | Type   | Description                              | Example       |
-|-------------|--------|------------------------------------------|---------------|
-| distributor | string | Search by ID, first name, or last name   | John          |
-| date_from   | date   | Start date (Y-m-d)                       | 2020-01-01    |
-| date_to     | date   | End date (Y-m-d)                         | 2020-12-31    |
-| invoice     | string | Filter by invoice number                 | ABC4170       |
-| per_page    | int    | Records per page (max: 100)              | 15            |
 
-**Response Example:**
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `distributor` | string | Search by ID, first name, or last name | `John` |
+| `date_from` | date | Start date (Y-m-d format) | `2020-01-01` |
+| `date_to` | date | End date (Y-m-d format) | `2020-12-31` |
+| `invoice` | string | Filter by invoice number | `ABC4170` |
+| `per_page` | int | Records per page (max: 100) | `15` |
+
+**Response:**
 ```json
 {
   "success": true,
@@ -173,30 +203,34 @@ GET /api/v1/reports/commission
   "data": [
     {
       "invoice": "ABC4170",
-      "purchaser": "Mary Johnson",
-      "distributor": "John Smith",
+      "purchaser": "Customer Name",
+      "purchaser_id": 123,
+      "distributor": "Distributor Name",
+      "distributor_id": 456,
       "referred_distributors": 8,
       "order_date": "2020-04-11",
-      "percentage": 10,
-      "order_total": 60.00,
-      "commission": 6.00
+      "percentage": "10%",
+      "order_total": "60.00",
+      "commission": "6.00"
     }
   ],
   "pagination": {
     "current_page": 1,
     "per_page": 15,
     "total": 150,
-    "last_page": 10
+    "last_page": 10,
+    "from": 1,
+    "to": 15
   }
 }
 ```
 
-**Get Order Items**
+#### Get Order Items
 ```http
 GET /api/v1/reports/commission/orders/{invoice}/items
 ```
 
-**Response Example:**
+**Response:**
 ```json
 {
   "success": true,
@@ -205,31 +239,32 @@ GET /api/v1/reports/commission/orders/{invoice}/items
     "invoice": "ABC4170",
     "items": [
       {
-        "sku": "SK22",
-        "product_name": "Product A",
-        "price": 25.00,
-        "quantity": 1,
-        "total": 25.00
+        "sku": "PROD001",
+        "product_name": "Product Name",
+        "price": "30.00",
+        "quantity": 2,
+        "total": "60.00"
       }
     ]
   }
 }
 ```
 
-### 2. Top Distributors Report
+### Task 2: Top Distributors Report
 
-**Get Top Distributors**
+#### Get Top Distributors
 ```http
 GET /api/v1/reports/top-distributors
 ```
 
 **Query Parameters:**
-| Parameter | Type | Description                      | Default |
-|-----------|------|----------------------------------|---------|
-| limit     | int  | Max distributors (max: 500)      | 200     |
-| per_page  | int  | Records per page (max: 100)      | 20      |
 
-**Response Example:**
+| Parameter | Type | Description | Default |
+|-----------|------|-------------|---------|
+| `limit` | int | Maximum distributors (max: 500) | 200 |
+| `per_page` | int | Records per page (max: 100) | 20 |
+
+**Response:**
 ```json
 {
   "success": true,
@@ -239,15 +274,13 @@ GET /api/v1/reports/top-distributors
       "rank": 1,
       "distributor_id": 456,
       "distributor_name": "Demario Purdy",
-      "total_sales": "$22,026.75",
-      "total_sales_raw": 22026.75
+      "total_sales": "22,026.75"
     },
     {
-      "rank": 2,
+      "rank": 197,
       "distributor_id": 789,
-      "distributor_name": "Floy Miller",
-      "total_sales": "$9,645.00",
-      "total_sales_raw": 9645.00
+      "distributor_name": "Chaim Kuhn",
+      "total_sales": "360.00"
     }
   ],
   "pagination": {
@@ -268,39 +301,95 @@ GET /api/v1/reports/top-distributors
 docker-compose exec laravel.test php artisan test
 ```
 
-### Run Specific Test Suite
+### Run Specific Test Suites
 ```bash
-docker-compose exec laravel.test php artisan test --filter="Commission Report API"
-docker-compose exec laravel.test php artisan test --filter="Top Distributors API"
+# Commission Report Tests
+docker-compose exec laravel.test php artisan test --filter="Commission"
+
+# Top Distributors Tests
+docker-compose exec laravel.test php artisan test --filter="TopDistributors"
+
+# Unit Tests Only
+docker-compose exec laravel.test php artisan test --testsuite=Unit
+
+# Feature Tests Only
+docker-compose exec laravel.test php artisan test --testsuite=Feature
 ```
 
-### Test Coverage
+### Test Coverage Summary
+
 ```
-✅ 46 tests passed
-✅ 142 assertions
-✅ Duration: ~14 seconds
+✅ 46+ tests passed
+✅ 142+ assertions
 ```
 
-**Test Breakdown:**
-- 13 Unit tests for DTOs
-- 17 Unit tests for Enums & business logic
-- 12 Unit tests for Services
-- 6 Feature tests for Commission Report API
-- 6 Feature tests for Top Distributors API
+| Category | Tests |
+|----------|-------|
+| Unit - DTOs | 13 tests |
+| Unit - Enums | 17 tests |
+| Unit - Services | 12 tests |
+| Feature - Commission API | 6 tests |
+| Feature - Top Distributors API | 6 tests |
 
-### Verify Expected Outputs
+---
+
+## ✅ Expected Test Cases
+
+### Task 1: Commission Report
+
+The following invoices should return these exact commission values:
+
+| Invoice | Expected Commission | Reason |
+|---------|--------------------|---------|
+| **ABC4170** | **$6.00** | Customer purchase, eligible distributor referrer |
+| **ABC6931** | **$37.20** | Customer purchase, eligible distributor referrer |
+| **ABC23352** | **$27.60** | Customer purchase, eligible distributor referrer |
+| **ABC3010** | **$0.00** | Purchaser is a Distributor (not a Customer) |
+| **ABC19323** | **$0.00** | Referrer is not a Distributor |
+
+#### Verify Commission Calculations
 ```bash
-docker-compose exec laravel.test php verify_requirements.php
+# Test ABC4170
+curl "http://localhost/api/v1/reports/commission?invoice=ABC4170"
+# Expected: commission = "6.00"
+
+# Test ABC6931
+curl "http://localhost/api/v1/reports/commission?invoice=ABC6931"
+# Expected: commission = "37.20"
+
+# Test ABC23352
+curl "http://localhost/api/v1/reports/commission?invoice=ABC23352"
+# Expected: commission = "27.60"
+
+# Test ABC3010 (should be $0 - purchaser is not a customer)
+curl "http://localhost/api/v1/reports/commission?invoice=ABC3010"
+# Expected: commission = "0.00"
+
+# Test ABC19323 (should be $0 - referrer is not a distributor)
+curl "http://localhost/api/v1/reports/commission?invoice=ABC19323"
+# Expected: commission = "0.00"
 ```
 
-This script verifies all the expected test cases from the requirements:
-- ABC4170 => $6.00
-- ABC6931 => $37.20
-- ABC23352 => $27.60
-- ABC3010 => $0
-- ABC19323 => $0
-- Demario Purdy => $22,026.75 (Rank #1)
-- And more...
+### Task 2: Top Distributors Report
+
+The following distributors should have these total sales and ranks:
+
+| Distributor | Total Sales | Rank |
+|-------------|-------------|------|
+| **Demario Purdy** | **$22,026.75** | #1 |
+| **Floy Miller** | **$9,645.00** | (verify) |
+| **Loy Schamberger** | **$575.00** | (verify) |
+| **Chaim Kuhn** | **$360.00** | #197 |
+| **Eliane Bogisich** | **$360.00** | #197 (tied) |
+
+#### Verify Top Distributors
+```bash
+# Get top distributors report
+curl "http://localhost/api/v1/reports/top-distributors?per_page=200"
+
+# Verify Demario Purdy is #1 with $22,026.75
+# Verify tied ranks for Chaim Kuhn and Eliane Bogisich at #197
+```
 
 ---
 
@@ -309,26 +398,23 @@ This script verifies all the expected test cases from the requirements:
 ```
 api-laravel/
 ├── app/
-│   ├── DTOs/                     # Data Transfer Objects
+│   ├── DTOs/                          # Data Transfer Objects
 │   │   ├── CommissionReportDTO.php
 │   │   ├── OrderItemDTO.php
 │   │   └── TopDistributorDTO.php
 │   │
-│   ├── Enums/                    # Type-safe enumerations
-│   │   ├── CommissionTier.php    # Commission percentage tiers
-│   │   └── UserType.php          # Customer/Distributor types
+│   ├── Enums/                         # Type-safe enumerations
+│   │   ├── CommissionTier.php         # 5%, 10%, 15%, 20%, 30%
+│   │   └── UserType.php               # Customer/Distributor
 │   │
-│   ├── Http/Controllers/Api/     # API Controllers
+│   ├── Http/Controllers/Api/          # API Controllers
 │   │   ├── CommissionReportController.php
 │   │   └── TopDistributorsController.php
 │   │
-│   ├── Models/                   # Eloquent Models
-│   │   ├── Order.php
-│   │   ├── OrderItem.php
-│   │   ├── Product.php
-│   │   └── User.php
+│   ├── Providers/
+│   │   └── RepositoryServiceProvider.php  # DI bindings
 │   │
-│   ├── Repositories/             # Data Access Layer
+│   ├── Repositories/                  # Data Access Layer
 │   │   ├── Contracts/
 │   │   │   ├── DistributorRepositoryInterface.php
 │   │   │   └── OrderRepositoryInterface.php
@@ -336,7 +422,7 @@ api-laravel/
 │   │       ├── EloquentDistributorRepository.php
 │   │       └── EloquentOrderRepository.php
 │   │
-│   └── Services/                 # Business Logic Layer
+│   └── Services/                      # Business Logic Layer
 │       ├── Contracts/
 │       │   ├── CommissionReportServiceInterface.php
 │       │   └── TopDistributorsServiceInterface.php
@@ -344,100 +430,128 @@ api-laravel/
 │           ├── CommissionReportService.php
 │           └── TopDistributorsService.php
 │
-├── database/sql/                 # Database files
-│   ├── 01_schema.sql            # Table structures
-│   └── 02_indexes.sql           # Performance indexes
+├── database/
+│   └── sql/                           # Database files
+│       └── nxm_assessment_2023.sql    # Assessment database
 │
 ├── routes/
-│   └── api.php                  # API route definitions
+│   └── api.php                        # API routes
 │
 ├── tests/
-│   ├── Feature/                 # Integration tests
+│   ├── Feature/                       # Integration tests
 │   │   ├── CommissionReportApiTest.php
+│   │   ├── CommissionCalculationTest.php
 │   │   └── TopDistributorsApiTest.php
-│   └── Unit/                    # Unit tests
-│       ├── DTOs/
-│       ├── Enums/
+│   └── Unit/                          # Unit tests
+│       ├── DTOs/DTOTest.php
+│       ├── Enums/CommissionTierTest.php
+│       ├── Enums/UserTypeTest.php
 │       └── Services/
+│           ├── CommissionReportServiceTest.php
+│           └── TopDistributorsServiceTest.php
 │
-├── docker-compose.yml           # Docker configuration
-├── phpunit.xml                  # Test configuration
-├── verify_requirements.php      # Verification script
-├── PROJECT_STATUS.md            # Detailed status report
-└── QUICK_START.md              # Quick reference guide
+├── docker-compose.yml                 # Docker configuration
+├── phpunit.xml                        # PHPUnit/Pest config
+└── README.md                          # This file
 ```
 
 ---
 
 ## 📊 Database Schema
 
-### Tables
-- **users** - Customers and Distributors
-- **orders** - Purchase orders
-- **order_items** - Order line items
-- **products** - Product catalog
+### Tables Used (from `nxm_assessment_2023.sql`)
 
-### Key Indexes (Added for Performance)
-- `idx_user_type` on users(user_type)
-- `idx_referred_by` on users(referred_by)
-- `idx_invoice` on orders(invoice)
-- `idx_order_date` on orders(order_date)
-- `idx_order_id` on order_items(order_id)
+| Table | Description |
+|-------|-------------|
+| `users` | id, first_name, last_name, username, referred_by, enrolled_date |
+| `user_category` | user_id, category_id (1=Distributor, 2=Customer) |
+| `orders` | id, invoice_number, purchaser_id, order_date |
+| `order_items` | order_id, product_id, quantity |
+| `products` | id, sku, name, price |
 
----
+### Key Relationships
 
-## 📝 Notes
+```
+users.id ←── orders.purchaser_id
+users.id ←── users.referred_by
+user_category.user_id ←── users.id
+orders.id ←── order_items.order_id
+products.id ←── order_items.product_id
+```
 
-- No database schema alterations were made (only indexes added as allowed)
-- All commission calculations are done in real-time
-- Referred distributors count is calculated at order time
-- Ranking system properly handles ties
-- All dates use Y-m-d format
-- Currency values use 2 decimal places
+### Important Notes
 
----
-
-## 📚 Documentation
-
-- [PROJECT_STATUS.md](PROJECT_STATUS.md) - Detailed implementation status
-- [QUICK_START.md](QUICK_START.md) - Quick reference guide
-- [API Documentation](#api-endpoints) - API endpoint details
+- **No schema alterations** were made (as per requirements)
+- Only indexes, views, stored procedures, and functions may be added
+- User type is stored in `user_category` table:
+  - `category_id = 1` → Distributor
+  - `category_id = 2` → Customer
 
 ---
 
-## 👨‍💻 Development
+## 🔧 Key Commands Reference
 
-### Key Commands
 ```bash
-# Access Laravel container
+# Start containers
+docker-compose up -d
+
+# Stop containers
+docker-compose down
+
+# Access Laravel container shell
 docker-compose exec laravel.test bash
 
-# Access database
+# Access MariaDB
 docker-compose exec mariadb mysql -uroot -ppassword nxm_assessment_2023
+
+# Run tests
+docker-compose exec laravel.test php artisan test
+
+# Clear caches
+docker-compose exec laravel.test php artisan cache:clear
+docker-compose exec laravel.test php artisan config:clear
 
 # View logs
 docker-compose logs -f laravel.test
-
-# Restart containers
-docker-compose restart
 ```
 
 ---
 
-## 📄 License
+## 📝 Implementation Notes
 
-This project was created for the TSA Backend Assessment.
+1. **Commission Calculations** are performed in real-time, not stored
+2. **Referred Distributors Count** is calculated at the time of each order
+3. **Ranking System** properly handles ties (same sales = same rank)
+4. **Date Format** uses Y-m-d (e.g., 2020-04-11)
+5. **Currency Values** formatted to 2 decimal places
+6. **Pagination** available on all list endpoints
 
 ---
 
-**Built with ❤️ using Laravel, Docker, and best practices**
+## 📄 Submission Checklist
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- [x] Video demo showing functionality and code walkthrough
+- [x] Source code zip file
+- [x] SQL file with database used
+- [x] Screenshots of test cases
 
-## Security Vulnerabilities
+### Required Screenshots
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Task 1 - Commission Report:**
+- [ ] ABC4170 => $6.00
+- [ ] ABC6931 => $37.20
+- [ ] ABC23352 => $27.60
+- [ ] ABC3010 => $0
+- [ ] ABC19323 => $0
 
-## License
+**Task 2 - Top Distributors:**
+- [ ] Demario Purdy - $22,026.75
+- [ ] Floy Miller - $9,645.00
+- [ ] Loy Schamberger - $575.00
+- [ ] #1 Demario Purdy - $22,026.75
+- [ ] #197 Chaim Kuhn - $360.00
+- [ ] #197 Eliane Bogisich - $360.00
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+**Built with Laravel 12, Docker (Sail), and best practices following Service-Repository Pattern**

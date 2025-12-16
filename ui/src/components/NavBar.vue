@@ -18,6 +18,8 @@ const isMenuOpen = ref(false)
                     <RouterLink to="/shop" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">SHOP</RouterLink>
                     <RouterLink to="/about" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">ABOUT US</RouterLink>
                     <RouterLink to="/influencer" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">BE AN INFLUENCER</RouterLink>
+                    <RouterLink to="/reports/commission" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">COMMISSION REPORT</RouterLink>
+                    <RouterLink to="/reports/top-distributors" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">TOP DISTRIBUTORS</RouterLink>
                 </div>
 
                 <!-- Right Side: Hamburger (Mobile) + Icons -->
@@ -54,6 +56,8 @@ const isMenuOpen = ref(false)
             <RouterLink to="/shop" class="text-gray-600 hover:text-gray-900 font-medium transition-colors block">SHOP</RouterLink>
             <RouterLink to="/about" class="text-gray-600 hover:text-gray-900 font-medium transition-colors block">ABOUT US</RouterLink>
             <RouterLink to="/influencer" class="text-gray-600 hover:text-gray-900 font-medium transition-colors block">BE AN INFLUENCER</RouterLink>
+            <RouterLink to="/reports/commission" class="text-gray-600 hover:text-gray-900 font-medium transition-colors block">COMMISSION REPORT</RouterLink>
+            <RouterLink to="/reports/top-distributors" class="text-gray-600 hover:text-gray-900 font-medium transition-colors block">TOP DISTRIBUTORS</RouterLink>
         </div>
     </nav>
 </template>

@@ -1,17 +1,21 @@
-# Vue Collagen Marketing App
+# Vue Collagen Marketing App - TSA Assessment Frontend
 
-A modern, responsive marketing application built with Vue 3, TypeScript, Tailwind CSS, and featuring comprehensive end-to-end testing with Cypress. The app showcases collagen products with hero sections, product galleries, influencer features, and a modal registration form.
+A modern, responsive marketing application built with Vue 3, TypeScript, Tailwind CSS, and featuring comprehensive testing with Vitest and Cypress. The app includes report pages for Commission Report and Top Distributors to support the MLM (Multi-Level Marketing) business requirements.
 
 ## 🌟 Features
 
+### Core Marketing Features
 - **Responsive Design**: Fully responsive layout optimized for mobile, tablet, and desktop
 - **Interactive Components**: Hero section, product showcase, influencer gallery, CTA sections
 - **Modal Registration Form**: Popup form with form state management using Pinia
 - **API Integration**: Service layer for backend communication with error handling
 - **Type Safety**: Full TypeScript support throughout the application
 - **Tailwind CSS**: Modern utility-first styling with custom animations
-- **E2E Testing**: Comprehensive Cypress test suite with 54+ test cases
-- **Separation of Concerns**: Clean architecture with composables, services, and components
+
+### TSA Assessment Report Pages
+- **Commission Report**: View all orders with commission calculations, filterable by distributor, date range, and invoice
+- **Top Distributors Report**: View top 200 distributors ranked by total sales with tied rankings support
+- **Unit Testing**: Comprehensive Vitest test suite for report components (25+ tests)
 
 ## 📋 Prerequisites
 
@@ -150,6 +154,18 @@ npm run test:unit
 
 Runs unit tests for components and utilities.
 
+**Report Page Tests (TSA Assessment):**
+
+| Test File | Tests | Description |
+|-----------|-------|-------------|
+| `CommissionReportView.spec.ts` | 12 | Tests filters, data display, pagination, error handling |
+| `TopDistributorsReportView.spec.ts` | 13 | Tests data loading, tied ranks, pagination |
+
+```bash
+# Run only report page tests
+npm run test:unit -- --run src/views/__tests__
+```
+
 ### Linting
 
 ```bash
@@ -181,7 +197,12 @@ src/
 ├── stores/                  # Pinia state management
 │   └── formModal.ts        # Form modal visibility state
 ├── views/                   # Page-level components
-│   └── HomeView.vue        # Main application view
+│   ├── HomeView.vue        # Main application view
+│   ├── CommissionReportView.vue  # Commission Report page
+│   ├── TopDistributorsReportView.vue # Top Distributors page
+│   └── __tests__/          # View component tests
+│       ├── CommissionReportView.spec.ts
+│       └── TopDistributorsReportView.spec.ts
 ├── router/                  # Vue Router configuration
 ├── assets/                  # Static assets (CSS, images)
 └── main.ts                  # Application entry point
@@ -205,6 +226,51 @@ vite.config.ts               # Vite build configuration
 tsconfig.json                # TypeScript configuration
 ```
 
+## 📊 TSA Report Pages
+
+### Commission Report
+**Route**: `/reports/commission`
+
+Displays all orders with commission calculations.
+
+**Features:**
+- Filter by Distributor (ID, First Name, or Last Name)
+- Filter by Date Range (From/To)
+- Filter by Invoice Number
+- Expandable rows to view order items (SKU, Product Name, Price, Quantity, Total)
+- Pagination with configurable page size
+
+**Columns:**
+| Column | Description |
+|--------|-------------|
+| Invoice | Invoice number of the order |
+| Purchaser | Name of the purchaser |
+| Distributor | Referrer (if they are a Distributor) |
+| Referred Distributors | Count at time of order |
+| Order Date | Date order was placed |
+| Percentage | Commission percentage |
+| Order Total | Sum of price × quantity |
+| Commission | Percentage × Order Total |
+
+### Top Distributors Report
+**Route**: `/reports/top-distributors`
+
+Displays top 200 distributors ranked by total sales.
+
+**Features:**
+- Ranks distributors by total sales from their referral network
+- Handles tied rankings (same sales = same rank)
+- Pagination (20 per page)
+
+**Columns:**
+| Column | Description |
+|--------|-------------|
+| Rank | Position in the ranking |
+| Distributor Name | Full name of the distributor |
+| Total Sales | Sum of all orders from referred users |
+
+---
+
 ## 🔌 API Integration
 
 The app uses a centralized API service for backend communication:
@@ -214,10 +280,16 @@ The app uses a centralized API service for backend communication:
 
 **Available Endpoints:**
 
+### Marketing Endpoints
 - `POST /register` - User registration
 - `POST /subscribe` - Newsletter subscription
 - `GET /products` - Fetch products list
 - `GET /influencers` - Fetch influencers list
+
+### Report Endpoints (TSA Assessment)
+- `GET /v1/reports/commission` - Get commission report with filters
+- `GET /v1/reports/commission/orders/{invoice}/items` - Get order items
+- `GET /v1/reports/top-distributors` - Get top distributors
 
 **Request/Response Types:**
 
