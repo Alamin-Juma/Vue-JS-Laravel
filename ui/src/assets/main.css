@@ -1,0 +1,4 @@
+/* assets/main.css - CORRECT */
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
+@import "tailwindcss";
