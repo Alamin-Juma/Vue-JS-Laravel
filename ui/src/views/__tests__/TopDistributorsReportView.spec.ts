@@ -253,7 +253,7 @@ describe('TopDistributorsReportView', () => {
     const buttons = wrapper.findAll('button')
     const nextButton = buttons[buttons.length - 1]
 
-    await nextButton.trigger('click')
+    await nextButton?.trigger('click')
     await flushPromises()
 
     expect(mockedAxios.get).toHaveBeenCalledWith(
