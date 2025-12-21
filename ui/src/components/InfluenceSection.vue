@@ -3,7 +3,7 @@
     <div class="max-w-6xl mx-auto">
       <!-- Section Title -->
       <div class="text-center mb-12">
-        <h2 class="text-3xl md:text-4xl font-semibold text-blue-900 mb-4">
+        <h2 class="text-3xl md:text-4xl font-semibold text-[#416887] mb-4">
           WHAT'S YOUR INFLUENCE?
         </h2>
         <p class="text-gray-600 text-center">

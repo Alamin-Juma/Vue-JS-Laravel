@@ -8,7 +8,7 @@ const formModal = useFormModalStore()
   <section class="bg-[#f0f1f2] py-12 px-4">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center  justify-around gap-8">
       <div>
-        <h2 class="text-2xl md:text-3xl font-semibold text-blue-900">
+        <h2 class="text-2xl md:text-3xl font-semibold text-[#416887]">
           WOULD YOU LIKE TO<br />LEARN MORE?
         </h2>
       </div>

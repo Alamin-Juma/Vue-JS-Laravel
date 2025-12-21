@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\CommissionReportController;
 use App\Http\Controllers\Api\TopDistributorsController;
+use App\Http\Controllers\FormSubmissionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group.
 |
 */
+
+// Form Submission endpoints (public)
+Route::post('/register', [FormSubmissionController::class, 'store'])
+    ->name('form.register');
 
 Route::prefix('v1')->group(function () {
     // Commission Report endpoints
@@ -28,4 +33,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/top-distributors', [TopDistributorsController::class, 'index'])
             ->name('reports.top-distributors.index');
     });
+
+    // Form Submissions admin endpoints
+    Route::get('/form-submissions', [FormSubmissionController::class, 'index'])
+        ->name('form.submissions.index');
 });
