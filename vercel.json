@@ -3,6 +3,5 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "devCommand": "npm run dev",
-  "framework": null,
-  "rootDirectory": "ui"
+  "framework": null
 }
