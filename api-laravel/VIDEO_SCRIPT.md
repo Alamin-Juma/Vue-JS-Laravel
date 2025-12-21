@@ -6,7 +6,7 @@
 
 ---
 
-## 📹 VIDEO STRUCTURE (Estimated Duration: 12-15 minutes)
+## 📹 VIDEO STRUCTURE (Estimated Duration: 15-18 minutes)
 
 ### 🎯 Video Objectives:
 - ✅ Demonstrate complete understanding of business requirements
@@ -142,7 +142,437 @@
 
 ---
 
-## 🎬 SECTION 3: DOCKER & DATABASE SETUP DEMONSTRATION (2 minutes)
+## 🎬 SECTION 3: PROJECT STRUCTURE & ARCHITECTURE WALKTHROUGH (3 minutes)
+
+### Script:
+
+> "Before diving into the application, let me walk you through the complete project structure and architecture. Understanding this will show you how I organized the code for maintainability, testability, and scalability.
+>
+> Let me open VS Code and show you the project organization...
+
+---
+
+### **Overall Project Structure:**
+
+> "At the root level, we have a monorepo with two main directories:
+>
+> ```
+> vue-laravel-project/
+> ├── api-laravel/        ← Backend Laravel API
+> ├── ui/                 ← Frontend Vue 3 Application
+> ├── README.md           ← Main project documentation
+> ├── vercel.json         ← Vercel deployment config
+> └── database_schema.sql ← Database schema file
+> ```
+>
+> This separation allows independent deployment and scaling. The frontend can be deployed on Vercel while the backend runs in Docker containers.
+
+---
+
+### **Backend Architecture (api-laravel/):**
+
+> "Let me expand the api-laravel folder to show the Laravel structure...
+>
+> **The backend follows the Service-Repository Pattern with these key directories:**
+>
+> ```
+> api-laravel/
+> ├── app/
+> │   ├── Http/
+> │   │   └── Controllers/
+> │   │       └── Api/
+> │   │           ├── CommissionReportController.php    ← HTTP layer
+> │   │           └── TopDistributorsController.php    ← HTTP layer
+> │   │
+> │   ├── Services/
+> │   │   ├── Contracts/
+> │   │   │   ├── CommissionReportServiceInterface.php ← Interface contract
+> │   │   │   └── TopDistributorsServiceInterface.php  ← Interface contract
+> │   │   └── Implementations/
+> │   │       ├── CommissionReportService.php          ← Business logic
+> │   │       └── TopDistributorsService.php           ← Business logic
+> │   │
+> │   ├── Repositories/
+> │   │   ├── Contracts/
+> │   │   │   └── OrderRepositoryInterface.php         ← Repository contract
+> │   │   └── Eloquent/
+> │   │       └── EloquentOrderRepository.php          ← Database queries
+> │   │
+> │   ├── DTOs/                    ← Data Transfer Objects
+> │   │   ├── CommissionReportDTO.php
+> │   │   ├── OrderItemDTO.php
+> │   │   └── TopDistributorDTO.php
+> │   │
+> │   ├── Enums/                   ← Type-safe constants
+> │   │   ├── CommissionTier.php   ← Commission % logic
+> │   │   └── UserType.php         ← Customer/Distributor types
+> │   │
+> │   └── Models/                  ← Eloquent models
+> │       ├── Order.php
+> │       ├── User.php
+> │       └── FormSubmission.php
+> │
+> ├── database/
+> │   ├── migrations/               ← Database schema
+> │   └── sql/
+> │       └── nxm_assessment_2023.sql  ← Assessment data
+> │
+> ├── tests/
+> │   ├── Feature/                 ← Integration tests
+> │   │   ├── CommissionReportTest.php
+> │   │   └── TopDistributorsReportTest.php
+> │   └── Unit/                    ← Unit tests
+> │       ├── DTOTest.php
+> │       ├── EnumTest.php
+> │       └── ServiceTest.php
+> │
+> ├── routes/
+> │   └── api.php                  ← API route definitions
+> │
+> ├── docker-compose.yml           ← Docker configuration
+> └── composer.json                ← PHP dependencies
+> ```
+
+---
+
+### **The Service-Repository Pattern - Data Flow:**
+
+> "Here's how a request flows through the system. Let me draw this out...
+>
+> **Request Flow for Commission Report:**
+>
+> ```
+> 1. HTTP Request
+>    ↓
+> 2. CommissionReportController (app/Http/Controllers/Api/)
+>    │  - Receives HTTP request
+>    │  - Validates input
+>    │  - Calls the service
+>    ↓
+> 3. CommissionReportService (app/Services/Implementations/)
+>    │  - Contains business logic
+>    │  - Calculates commissions
+>    │  - Applies business rules
+>    │  - Calls the repository
+>    ↓
+> 4. EloquentOrderRepository (app/Repositories/Eloquent/)
+>    │  - Executes database queries
+>    │  - Joins tables
+>    │  - Returns raw data
+>    ↓
+> 5. Database (MariaDB)
+>    │  - Orders table
+>    │  - Users table
+>    │  - Products table
+>    │  - Views: v_order_commission_report
+>    ↓
+> 6. Data flows back up
+>    │  Repository → Service (transforms to DTOs) → Controller → JSON Response
+> ```
+>
+> **Why This Pattern?**
+>
+> ✅ **Separation of Concerns:** Each layer has one job
+> ✅ **Testability:** Can test each layer independently with mocks
+> ✅ **Maintainability:** Changes in database don't affect business logic
+> ✅ **Reusability:** Services can be used by multiple controllers
+> ✅ **SOLID Principles:** Follows dependency inversion and single responsibility
+
+---
+
+### **Key Backend Components Explained:**
+
+**1. Controllers (HTTP Layer):**
+> "Open app/Http/Controllers/Api/CommissionReportController.php...
+>
+> ```php
+> public function index(Request $request)
+> {
+>     // 1. Validate request
+>     // 2. Call service with parameters
+>     // 3. Return JSON response
+> }
+> ```
+>
+> Controllers are thin - they only handle HTTP concerns. No business logic here.
+
+**2. Services (Business Logic Layer):**
+> "Open app/Services/Implementations/CommissionReportService.php...
+>
+> ```php
+> public function getReport($filters)
+> {
+>     // 1. Get orders from repository
+>     // 2. Loop through orders
+>     // 3. Calculate commission for each
+>     // 4. Apply business rules
+>     // 5. Return DTOs
+> }
+>
+> private function calculateCommission($order)
+> {
+>     // Check if purchaser is customer
+>     // Check if referrer is distributor
+>     // Get commission tier
+>     // Calculate amount
+> }
+> ```
+>
+> Services contain all the business logic. This is where commission calculations happen.
+
+**3. Repositories (Data Access Layer):**
+> "Open app/Repositories/Eloquent/EloquentOrderRepository.php...
+>
+> ```php
+> public function getCommissionReport($filters)
+> {
+>     return Order::query()
+>         ->join('users as purchasers', ...)
+>         ->leftJoin('users as distributors', ...)
+>         ->with('orderItems.product')
+>         ->selectRaw('...')
+>         ->paginate(15);
+> }
+> ```
+>
+> Repositories only handle database queries. Complex SQL with joins and subqueries live here.
+
+**4. DTOs (Data Transfer Objects):**
+> "Open app/DTOs/CommissionReportDTO.php...
+>
+> ```php
+> class CommissionReportDTO
+> {
+>     public function __construct(
+>         public readonly string $invoiceNumber,
+>         public readonly string $purchaserName,
+>         public readonly ?string $distributorName,
+>         public readonly int $referredDistributors,
+>         public readonly float $commissionPercentage,
+>         public readonly float $commission,
+>         // ...
+>     ) {}
+> }
+> ```
+>
+> DTOs ensure type safety and make data structures explicit. They're immutable (readonly).
+
+**5. Enums (Business Rules as Code):**
+> "Open app/Enums/CommissionTier.php...
+>
+> ```php
+> enum CommissionTier: int
+> {
+>     case TIER_1 = 5;   // 0-4 distributors
+>     case TIER_2 = 10;  // 5-10 distributors
+>     case TIER_3 = 15;  // 11-20 distributors
+>     case TIER_4 = 20;  // 21-29 distributors
+>     case TIER_5 = 30;  // 30+ distributors
+>
+>     public static function fromReferredDistributors(int $count): int
+>     {
+>         return match(true) {
+>             $count <= 4 => self::TIER_1->value,
+>             $count <= 10 => self::TIER_2->value,
+>             $count <= 20 => self::TIER_3->value,
+>             $count <= 29 => self::TIER_4->value,
+>             default => self::TIER_5->value,
+>         };
+>     }
+> }
+> ```
+>
+> Enums encapsulate business rules. If commission tiers change, we only modify this file.
+
+**6. Database Views:**
+> "I created two custom database views for performance:
+>
+> - **v_order_commission_report:** Pre-joins orders, users, and calculates referred distributors
+> - **v_distributor_sales:** Pre-calculates total sales for each distributor
+>
+> These views improve query performance and simplify repository code.
+
+---
+
+### **Frontend Architecture (ui/):**
+
+> "Now let me show the frontend structure...
+>
+> ```
+> ui/
+> ├── src/
+> │   ├── views/                    ← Page components
+> │   │   ├── CommissionReportView.vue
+> │   │   ├── TopDistributorsReportView.vue
+> │   │   └── HomeView.vue
+> │   │
+> │   ├── components/               ← Reusable components
+> │   │   ├── NavBar.vue
+> │   │   ├── HeroSection.vue
+> │   │   ├── RegistrationModal.vue
+> │   │   └── RegistrationForm.vue
+> │   │
+> │   ├── services/                 ← API communication
+> │   │   └── api.ts               ← Axios HTTP client
+> │   │
+> │   ├── stores/                   ← Pinia state management
+> │   │   └── modal.ts             ← Modal state store
+> │   │
+> │   ├── router/                   ← Vue Router config
+> │   │   └── index.ts             ← Route definitions
+> │   │
+> │   ├── composables/              ← Reusable Vue composition functions
+> │   │   └── useModal.ts
+> │   │
+> │   └── assets/                   ← Images, icons, styles
+> │
+> ├── public/                       ← Static assets
+> ├── package.json                  ← Node dependencies
+> ├── vite.config.ts               ← Vite build config
+> ├── tailwind.config.js           ← Tailwind CSS config
+> └── tsconfig.json                ← TypeScript config
+> ```
+
+---
+
+### **Frontend Data Flow:**
+
+> "Here's how the frontend fetches and displays data:
+>
+> ```
+> 1. User navigates to /reports/commission
+>    ↓
+> 2. CommissionReportView.vue (Page Component)
+>    │  - onMounted() lifecycle hook
+>    │  - Calls fetchCommissions()
+>    ↓
+> 3. api.ts Service Layer
+>    │  - axios.get('http://localhost/api/v1/reports/commission')
+>    │  - Handles authentication, headers
+>    │  - Error handling
+>    ↓
+> 4. Backend API (Laravel)
+>    │  - Returns JSON response
+>    ↓
+> 5. Response flows back
+>    │  - Data stored in Vue reactive state
+>    │  - Template re-renders with data
+>    │  - Table displays commission records
+> ```
+>
+> **Key Frontend Technologies:**
+> - **Vue 3 Composition API:** Modern reactive components
+> - **TypeScript:** Type safety throughout
+> - **Tailwind CSS:** Utility-first styling
+> - **Axios:** HTTP client for API calls
+> - **Pinia:** Centralized state management
+> - **Vue Router:** Client-side routing
+
+---
+
+### **How Frontend and Backend Connect:**
+
+> "The frontend and backend communicate via RESTful API:
+>
+> **API Endpoints:**
+> ```
+> GET  /api/v1/reports/commission
+>   ← Called by: CommissionReportView.vue
+>   → Returns: Paginated commission data
+>
+> GET  /api/v1/reports/top-distributors
+>   ← Called by: TopDistributorsReportView.vue
+>   → Returns: Ranked distributor list
+>
+> POST /api/register
+>   ← Called by: RegistrationForm.vue
+>   → Returns: Success message and ID
+> ```
+>
+> **CORS Configuration:**
+> The backend has CORS enabled to accept requests from the Vercel frontend URL.
+>
+> **Environment Variables:**
+> - Frontend: VITE_API_URL='http://localhost' (development)
+> - Backend: APP_URL='http://localhost'
+
+---
+
+### **Testing Architecture:**
+
+> "Let me show the tests folder structure...
+>
+> ```
+> tests/
+> ├── Feature/                       ← Full HTTP tests
+> │   ├── CommissionReportApiTest.php
+> │   │   - Tests complete API endpoint
+> │   │   - Tests with filters
+> │   │   - Tests validation
+> │   │
+> │   └── TopDistributorsReportApiTest.php
+> │       - Tests ranking logic
+> │       - Tests tied rankings
+> │       - Tests pagination
+> │
+> └── Unit/                          ← Isolated unit tests
+>     ├── CommissionTierEnumTest.php
+>     │   - Tests tier calculations
+>     │   - Tests edge cases
+>     │
+>     ├── CommissionReportServiceTest.php
+>     │   - Tests business logic
+>     │   - Mocks repository
+>     │
+>     └── CommissionReportDTOTest.php
+>         - Tests data transformation
+> ```
+>
+> **Test Coverage:**
+> - 46 total tests
+> - 142 assertions
+> - 100% pass rate
+> - Tests cover: Controllers, Services, Repositories, DTOs, Enums
+> - Both happy paths and edge cases tested
+
+---
+
+### **Summary - Why This Architecture?**
+
+> "To summarize the architecture decisions:
+>
+> ✅ **Scalable:** Each layer can be modified independently
+> ✅ **Testable:** Interfaces allow mocking for unit tests
+> ✅ **Maintainable:** Clear separation makes code easy to understand
+> ✅ **Professional:** Follows industry best practices and SOLID principles
+> ✅ **Type-Safe:** TypeScript frontend + PHP 8.4 typed properties
+> ✅ **Production-Ready:** Proper error handling, validation, logging
+>
+> This is not just code that works - it's code that's built to last and scale.
+>
+> Now let me show you how to actually run this system with Docker..."
+
+### 📋 Actions:
+1. **Show VS Code** with project open
+2. **Expand api-laravel folder** - show directory tree
+3. **Navigate through key files:**
+   - Controllers: app/Http/Controllers/Api/
+   - Services: app/Services/Implementations/
+   - Repositories: app/Repositories/Eloquent/
+   - DTOs: app/DTOs/
+   - Enums: app/Enums/
+   - Tests: tests/
+4. **Show ui folder structure**
+   - views/, components/, services/, stores/
+5. **Open 2-3 key files** briefly:
+   - CommissionReportController.php
+   - CommissionReportService.php
+   - CommissionTier.php enum
+6. **Draw flow diagram** on screen (optional) or use existing README diagram
+
+---
+
+## 🎬 SECTION 4: DOCKER & DATABASE SETUP DEMONSTRATION (2 minutes)
 
 ### Script:
 
@@ -355,9 +785,7 @@
 
 ---
 
-## 🎬 SECTION 4: TASK 1 - COMMISSION REPORT DEMONSTRATION (3 minutes)
-
-## 🎬 SECTION 4: TASK 1 - COMMISSION REPORT DEMONSTRATION (3 minutes)
+## 🎬 SECTION 5: TASK 1 - COMMISSION REPORT DEMONSTRATION (3 minutes)
 
 ### Script:
 
@@ -577,7 +1005,7 @@
 
 ---
 
-## 🎬 SECTION 5: TASK 2 - TOP DISTRIBUTORS REPORT DEMONSTRATION (2.5 minutes)
+## 🎬 SECTION 6: TASK 2 - TOP DISTRIBUTORS REPORT DEMONSTRATION (2.5 minutes)
 
 ### Script:
 
@@ -761,7 +1189,7 @@
 
 ---
 
-## 🎬 SECTION 6: BACKEND API TESTING (2 minutes)
+## 🎬 SECTION 7: BACKEND API TESTING (2 minutes)
 
 ### Script:
 
@@ -956,7 +1384,7 @@
 
 ---
 
-## 🎬 SECTION 6: CODE ARCHITECTURE WALKTHROUGH (2.5 minutes)
+## 🎬 SECTION 8: TEST SUITE DEMONSTRATION (1.5 minutes)
 
 ### Script:
 
@@ -1020,39 +1448,7 @@
 
 ---
 
-## 🎬 SECTION 7: TEST SUITE DEMONSTRATION (1.5 minutes)
-
-### Script:
-
-> "Now let me run the complete test suite to prove all functionality works correctly.
->
-> I'll open the terminal and run: `php artisan test`
->
-> As you can see, all **46 tests pass with 142 assertions**.
->
-> The test suite includes:
-
-#### Unit Tests:
-> "- **DTO Tests** - Verify data transfer objects work correctly
-> - **Enum Tests** - Test commission tier calculations
-> - **Service Tests** - Test business logic in isolation with mocked repositories
-
-#### Feature Tests:
-> "- **Commission Report API Tests** - Test the full HTTP endpoint
-> - **Top Distributors API Tests** - Verify rankings and sales calculations
-> - **Validation Tests** - Ensure invalid inputs are rejected
->
-> Green across the board! All tests passing proves the application meets all requirements."
-
-### Actions:
-- Open terminal in VS Code
-- Run: `docker-compose exec laravel.test php artisan test`
-- Let the full test suite run and show results
-- Optionally run with `--testdox` flag for better output: `php artisan test --testdox`
-
----
-
-## 🎬 SECTION 8: DATABASE SCHEMA EXPLANATION (1 minute)
+## 🎬 SECTION 9: DATABASE SCHEMA EXPLANATION (1 minute)
 
 ### Script:
 
@@ -1082,7 +1478,7 @@
 
 ---
 
-## 🎬 SECTION 9: FRONTEND TECHNOLOGY STACK (30 seconds)
+## 🎬 SECTION 10: FRONTEND TECHNOLOGY STACK (30 seconds)
 
 ### Script:
 
@@ -1104,7 +1500,7 @@
 
 ---
 
-## 🎬 SECTION 10: CONCLUSION & SUBMISSION SUMMARY (1 minute)
+## 🎬 SECTION 11: CONCLUSION & SUBMISSION SUMMARY (1 minute)
 
 ### Script:
 
