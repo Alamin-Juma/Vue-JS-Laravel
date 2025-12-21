@@ -2,6 +2,135 @@
 
 A modern, responsive marketing application built with Vue 3, TypeScript, Tailwind CSS, and featuring comprehensive testing with Vitest and Cypress. The app includes report pages for Commission Report and Top Distributors to support the MLM (Multi-Level Marketing) business requirements.
 
+---
+
+## 🚀 Quick Start Guide
+
+### Running the Frontend UI
+
+1. **Navigate to the UI folder** in a Git Bash terminal:
+   ```bash
+   cd /c/dev/personal/vue-laravel-project/ui
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server**:
+   ```bash
+   npm run dev
+   ```
+
+4. **Open your browser** and navigate to:
+   ```
+   http://localhost:5173
+   ```
+
+The frontend will be running and ready to use! 🎉
+
+---
+
+### Connecting to the Backend API
+
+The frontend requires the Laravel backend to be running for form submissions and API features.
+
+#### Prerequisites
+- **Docker Desktop** must be installed and running
+- **Git Bash** or terminal
+
+#### Backend Setup Steps
+
+1. **Ensure Docker Desktop is running**
+
+2. **Navigate to the API folder**:
+   ```bash
+   cd /c/dev/personal/vue-laravel-project/api-laravel
+   ```
+
+3. **Start Docker containers**:
+   ```bash
+   docker-compose up -d
+   ```
+   
+   Expected output:
+   ```
+   [+] Running 2/2
+   ✔ Container api-laravel-mariadb-1       Healthy    31.3s 
+   ✔ Container api-laravel-laravel.test-1  Started     0.8s
+   ```
+
+4. **Run database migrations** (first time only):
+   ```bash
+   docker-compose exec laravel.test php artisan migrate:fresh
+   ```
+   
+   Expected output:
+   ```
+   Dropping all tables ........................ DONE
+   INFO  Preparing database.
+   Creating migration table ................... DONE
+   INFO  Running migrations.
+   0001_01_01_000000_create_users_table ....... DONE
+   2025_12_21_000000_create_form_submissions_table ... DONE
+   ```
+
+5. **Verify API routes are available**:
+   ```bash
+   docker-compose exec laravel.test php artisan route:list --path=api
+   ```
+   
+   You should see routes including:
+   - `POST api/register` - Form submission endpoint
+   - `GET api/v1/form-submissions` - Retrieve submissions
+
+6. **Test the API endpoint** (optional):
+   ```bash
+   curl -X POST http://localhost/api/register \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/json" \
+     -d '{"firstName":"John","lastName":"Doe","phone":"1234567890","email":"john.doe@example.com","agreeToTerms":true}'
+   ```
+   
+   Expected response:
+   ```json
+   {
+     "success": true,
+     "message": "Thank you for registering! We will contact you soon.",
+     "data": {
+       "id": 1,
+       "email": "john.doe@example.com",
+       "created_at": "2025-12-21T08:07:46.000000Z"
+     }
+   }
+   ```
+
+7. **Verify data in database** (optional):
+   ```bash
+   docker-compose exec mariadb mysql -u sail -ppassword nxm_assessment_2023 \
+     -e "SELECT id, first_name, last_name, email, created_at FROM form_submissions ORDER BY id;"
+   ```
+
+#### Backend API Endpoints
+
+Once running, the backend will be available at `http://localhost`:
+
+- **POST** `/api/register` - Submit registration form
+- **GET** `/api/v1/form-submissions` - Get all form submissions (paginated)
+- **GET** `/api/v1/reports/commission` - Commission report data
+- **GET** `/api/v1/reports/top-distributors` - Top distributors report
+
+#### Stopping the Backend
+
+To stop the Docker containers when done:
+```bash
+cd /c/dev/personal/vue-laravel-project/api-laravel
+docker-compose down
+```
+
+---
+
 ## 🌟 Features
 
 ### Core Marketing Features
