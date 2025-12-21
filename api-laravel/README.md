@@ -9,7 +9,125 @@
 
 ---
 
-## 📋 Table of Contents
+## � Quick Start Guide
+
+### Prerequisites
+- **Docker Desktop** must be installed and running
+- **Git Bash** or terminal
+- No PHP or Composer installation required (runs in Docker)
+
+### Running the Backend API
+
+1. **Ensure Docker Desktop is running**
+
+2. **Navigate to the API folder** in Git Bash:
+   ```bash
+   cd /c/dev/personal/vue-laravel-project/api-laravel
+   ```
+
+3. **Start Docker containers** (MariaDB + Laravel):
+   ```bash
+   docker-compose up -d
+   ```
+   
+   Expected output:
+   ```
+   [+] Running 2/2
+   ✔ Container api-laravel-mariadb-1       Healthy    31.3s 
+   ✔ Container api-laravel-laravel.test-1  Started     0.8s
+   ```
+
+4. **Run database migrations** (first time setup):
+   ```bash
+   docker-compose exec laravel.test php artisan migrate:fresh
+   ```
+   
+   Expected output:
+   ```
+   Dropping all tables ........................ DONE
+   INFO  Preparing database.
+   Creating migration table ................... DONE
+   INFO  Running migrations.
+   
+   0001_01_01_000000_create_users_table ....... DONE
+   0001_01_01_000001_create_cache_table ....... DONE
+   0001_01_01_000002_create_jobs_table ........ DONE
+   2025_12_21_000000_create_form_submissions_table ... DONE
+   ```
+
+5. **View all database tables**:
+   ```bash
+   docker-compose exec mariadb mysql -u sail -ppassword nxm_assessment_2023 -e "SHOW TABLES;"
+   ```
+   
+   Expected output:
+   ```
+   +-------------------------------+
+   | Tables_in_nxm_assessment_2023 |
+   +-------------------------------+
+   | cache                         |
+   | cache_locks                   |
+   | failed_jobs                   |
+   | form_submissions              |
+   | job_batches                   |
+   | jobs                          |
+   | migrations                    |
+   | password_reset_tokens         |
+   | sessions                      |
+   | users                         |
+   | v_distributor_sales           |
+   | v_order_commission_report     |
+   +-------------------------------+
+   ```
+
+6. **Verify API routes**:
+   ```bash
+   docker-compose exec laravel.test php artisan route:list --path=api
+   ```
+   
+   Available routes:
+   ```
+   POST   api/register .................... Form submission endpoint
+   GET    api/v1/form-submissions ......... Get all submissions
+   GET    api/v1/reports/commission ....... Commission report
+   GET    api/v1/reports/top-distributors . Top distributors report
+   ```
+
+7. **Test the API** (optional):
+   ```bash
+   curl -X POST http://localhost/api/register \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/json" \
+     -d '{"firstName":"John","lastName":"Doe","phone":"1234567890","email":"john.doe@example.com","agreeToTerms":true}'
+   ```
+
+8. **View table data** (optional):
+   ```bash
+   docker-compose exec mariadb mysql -u sail -ppassword nxm_assessment_2023 \
+     -e "SELECT id, first_name, last_name, email, created_at FROM form_submissions ORDER BY id;"
+   ```
+
+### API Available at:
+- **Base URL**: `http://localhost`
+- **API Prefix**: `/api` or `/api/v1`
+
+### Stopping the Backend
+
+When done, stop the containers:
+```bash
+docker-compose down
+```
+
+### Running Tests
+
+Execute the test suite (46 passing tests):
+```bash
+docker-compose exec laravel.test php artisan test
+```
+
+---
+
+## �📋 Table of Contents
 
 - [Assessment Overview](#assessment-overview)
 - [Business Rules](#business-rules)
