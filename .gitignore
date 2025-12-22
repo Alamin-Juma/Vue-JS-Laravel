@@ -21,4 +21,11 @@ rad.json
 #Test results file
 TestResults.xml
 
-node_modulesVIDEO_SCRIPT.md
+node_modules
+
+# Documentation files not for submission
+SUBMISSION_SUMMARY.md
+FRONTEND_VIDEO_SCRIPT.md
+DEPLOYMENT_CHECKLIST.md
+api-laravel/PROJECT_STATUS.md
+api-laravel/VIDEO_SCRIPT.md
